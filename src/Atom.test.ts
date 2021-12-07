@@ -1,0 +1,100 @@
+import { createAtom } from './Atom';
+import type { AtomSubscription } from './Atom';
+
+describe('Atom', () => {
+  test('Creating an atom sets the initial value', () => {
+    const string = 'string';
+    const stringAtom = createAtom<string>(string);
+    const number = 999;
+    const numberAtom = createAtom<number>(number);
+    const object = { x: 1, y: 2, z: 3 };
+    const objectAtom = createAtom<object>(object);
+    const func = () => 'test';
+    const funcAtom = createAtom<Function>(func);
+    expect(stringAtom.value).toBe(string);
+    expect(numberAtom.value).toBe(number);
+    expect(objectAtom.value).toBe(object);
+    expect(funcAtom.value).toBe(func);
+  });
+
+  test('Updating an atom changes value', () => {
+    const stringAtom = createAtom<string>('string');
+    const numberAtom = createAtom<number>(999);
+    const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
+    const funcAtom = createAtom<Function>(() => 'test');
+    const string = 'new string';
+    stringAtom.value = string;
+    const number = 1000;
+    numberAtom.value = number;
+    const object = { a: 9, b: 8, c: 7 };
+    objectAtom.value = object;
+    const func = () => 'next';
+    funcAtom.value = func;
+    expect(stringAtom.value).toBe(string);
+    expect(numberAtom.value).toBe(number);
+    expect(objectAtom.value).toBe(object);
+    expect(funcAtom.value).toBe(func);
+  });
+
+  test('Subscribing to an atom fires subscription callback on update', () => {
+    const stringAtom = createAtom<string>('string');
+    const numberAtom = createAtom<number>(999);
+    const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
+    const funcAtom = createAtom<Function>(() => 'test');
+    const stringSubscription: AtomSubscription<string> = jest.fn(() => {});
+    stringAtom.subscribe(stringSubscription);
+    const string = 'new string';
+    stringAtom.value = string;
+    const numberSubscription: AtomSubscription<number> = jest.fn(() => {});
+    numberAtom.subscribe(numberSubscription);
+    const number = 1000;
+    numberAtom.value = number;
+    const objectSubscription: AtomSubscription<object> = jest.fn(() => {});
+    objectAtom.subscribe(objectSubscription);
+    const object = { a: 9, b: 8, c: 7 };
+    objectAtom.value = object;
+    const funcSubscription: AtomSubscription<Function> = jest.fn(() => {});
+    funcAtom.subscribe(funcSubscription);
+    const func = () => 'next';
+    funcAtom.value = func;
+    expect(stringSubscription).toBeCalledTimes(1);
+    expect(stringSubscription).toBeCalledWith(string);
+    expect(numberSubscription).toBeCalledTimes(1);
+    expect(numberSubscription).toBeCalledWith(number);
+    expect(objectSubscription).toBeCalledTimes(1);
+    expect(objectSubscription).toBeCalledWith(object);
+    expect(funcSubscription).toBeCalledTimes(1);
+    expect(funcSubscription).toBeCalledWith(func);
+  });
+
+  test('Unsubscribing to atom does not fire subscription callback on update', () => {
+    const stringAtom = createAtom<string>('string');
+    const numberAtom = createAtom<number>(999);
+    const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
+    const funcAtom = createAtom<Function>(() => 'test');
+    const stringSubscription: AtomSubscription<string> = jest.fn(() => {});
+    const unsubscribeStringAtom = stringAtom.subscribe(stringSubscription);
+    unsubscribeStringAtom();
+    const string = 'new string';
+    stringAtom.value = string;
+    const numberSubscription: AtomSubscription<number> = jest.fn(() => {});
+    const unsubscribeNumberAtom = numberAtom.subscribe(numberSubscription);
+    unsubscribeNumberAtom();
+    const number = 1000;
+    numberAtom.value = number;
+    const objectSubscription: AtomSubscription<object> = jest.fn(() => {});
+    const unsubscribeObjectAtom = objectAtom.subscribe(objectSubscription);
+    unsubscribeObjectAtom();
+    const object = { a: 9, b: 8, c: 7 };
+    objectAtom.value = object;
+    const funcSubscription: AtomSubscription<Function> = jest.fn(() => {});
+    const unsubscribeFuncAtom = funcAtom.subscribe(funcSubscription);
+    unsubscribeFuncAtom();
+    const func = () => 'next';
+    funcAtom.value = func;
+    expect(stringSubscription).toBeCalledTimes(0);
+    expect(numberSubscription).toBeCalledTimes(0);
+    expect(objectSubscription).toBeCalledTimes(0);
+    expect(funcSubscription).toBeCalledTimes(0);
+  });
+});
