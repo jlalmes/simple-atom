@@ -15,7 +15,7 @@ Simple atomic state that can be updated outside React.
 
 * First class **Typescript support**.
 
-* It's simple, open source and it's tiny! **<1KB** gzipped.
+* It's simple, open source and it's tiny! **<250 bytes** gzipped.
 
 
 ## Installation

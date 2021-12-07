@@ -1,7 +1,7 @@
 {
   "name": "simple-atom",
   "version": "1.0.1",
-  "description": "Simple atomic state for use inside and outside of React",
+  "description": "Simple atomic state that can be updated outside React.",
   "author": "James Berry <jb@jamesbe.com>",
   "private": false,
   "license": "MIT",
