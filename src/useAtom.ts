@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { SetStateAction } from 'react';
 
 import type { Atom } from './Atom';
+
+type SetAtomValue<T> = T extends Function ? ((prevState: T) => T) : T | ((prevState: T) => T);
 
 /** React hook that returns the stateful value of an atom and a function to update it  */
 export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
@@ -14,8 +15,7 @@ export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [atom]);
 
-  const setValue = (value: SetStateAction<T extends Function ? () => T : T>) => {
-    // @ts-ignore ts(2349)
+  const setValue = (value: SetAtomValue<T>) => {
     // eslint-disable-next-line no-param-reassign
     atom.value = typeof value === 'function' ? value(atom.value) : value;
   };
