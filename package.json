@@ -18,7 +18,7 @@
   "homepage": "https://github.com/jlalmes/simple-atom",
   "repository": "github:jlalmes/simple-atom",
   "bugs": "https://github.com/jlalmes/simple-atom/issues",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "test": "tsc --noEmit && jest --verbose",
