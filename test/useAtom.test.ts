@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import { createAtom } from './Atom';
-import { useAtom } from './useAtom';
+import { createAtom, useAtom } from '../src';
 
 describe('useAtom', () => {
   test('Hook returns atom value and setter function', () => {

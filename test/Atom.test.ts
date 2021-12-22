@@ -1,5 +1,5 @@
-import { createAtom } from './Atom';
-import type { AtomSubscription } from './Atom';
+import { createAtom } from '../src';
+import type { AtomSubscription } from '../src';
 
 describe('Atom', () => {
   test('Creating an atom sets the initial value', () => {

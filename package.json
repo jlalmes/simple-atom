@@ -18,10 +18,12 @@
   "homepage": "https://github.com/jlalmes/simple-atom",
   "repository": "github:jlalmes/simple-atom",
   "bugs": "https://github.com/jlalmes/simple-atom/issues",
-  "main": "src/index.ts",
+  "main": "dist/index.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "jest --verbose",
-    "prepublish": "npm run test"
+    "test": "tsc --noEmit && jest --verbose",
+    "build": "rimraf dist && tsc",
+    "prepublish": "npm run test && npm run build"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -32,7 +34,7 @@
     "@types/react": "^17.0.37",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.5.0",
     "eslint-config-airbnb": "^19.0.2",
     "eslint-config-airbnb-typescript": "^16.1.0",
     "eslint-plugin-import": "^2.25.3",
@@ -40,6 +42,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "jest": "^27.4.3",
     "react-test-renderer": "^17.0.2",
+    "rimraf": "^3.0.2",
     "ts-jest": "^27.1.0",
     "typescript": "^4.5.2"
   }

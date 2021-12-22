@@ -1,7 +1,7 @@
-const eslintConfig = {
+module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.eslint.json'],
   },
   plugins: ['@typescript-eslint'],
   extends: [
@@ -13,7 +13,6 @@ const eslintConfig = {
     'no-underscore-dangle': 'off',
     '@typescript-eslint/lines-between-class-members': 'off',
     'import/prefer-default-export': 'off',
+    'max-len': 'off',
   },
 };
-
-module.exports = eslintConfig;

@@ -1,27 +1,22 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "outDir": "dist",
+    "allowJs": true,
+    "checkJs": false,
     "target": "esnext",
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-    "outDir": "build",
     "declaration": true,
-    "declarationDir": "typings",
+    "declarationDir": "dist",
     "sourceMap": true,
     "removeComments": false,
   },
-  "files": [
-    ".eslintrc.js",
-    "jest.config.js",
-  ],
   "include": [
-    "**/*",
-  ],
-  "exclude": [
-    "node_modules",
-    "build"
+    "src",
+    "typings",
   ],
 }
