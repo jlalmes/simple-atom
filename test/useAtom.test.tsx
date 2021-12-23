@@ -1,4 +1,6 @@
+import React, { useEffect } from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
+import { render } from '@testing-library/react';
 
 import { createAtom, useAtom } from '../src';
 
@@ -59,5 +61,45 @@ describe('useAtom', () => {
     expect(atom.value).toBe(updatedFunction);
     expect(result.current[0]).toBe(updatedFunction);
     expect(updatedFunction).toBeCalledTimes(0);
+  });
+
+  test('Does not cause unnecessary re-renders', () => {
+    const onRenderMock = jest.fn();
+    const atom = createAtom<string>('value');
+    const ComponentWithAtom: React.FC = function () {
+      const [value] = useAtom(atom);
+      onRenderMock();
+      return (<div>{value}</div>);
+    };
+    render(<ComponentWithAtom />);
+    expect(onRenderMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('Does not cause unnecessary re-renders on atom update', () => {
+    const onRenderMock = jest.fn();
+    const onUseEffectMock = jest.fn();
+    const atom = createAtom<string>('value');
+    const ComponentWithAtom: React.FC = function () {
+      const [value, setValue] = useAtom(atom);
+      onRenderMock();
+      useEffect(() => {
+        onUseEffectMock();
+        setValue('next');
+      }, [setValue]);
+      return (<div>{value}</div>);
+    };
+    render(<ComponentWithAtom />);
+    expect(onRenderMock).toHaveBeenCalledTimes(2);
+    expect(onUseEffectMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('Setter returns correct current value in callback after atom update', () => {
+    const atom = createAtom<number>(1);
+    const { result } = renderHook(() => useAtom(atom));
+    act(() => {
+      result.current[1]((currentValue) => currentValue + 1);
+      result.current[1]((currentValue) => currentValue + 1);
+    });
+    expect(result.current[0]).toBe(3);
   });
 });

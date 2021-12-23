@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import type { Atom } from './Atom';
 
@@ -15,10 +15,10 @@ export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [atom]);
 
-  const setValue = (value: SetAtomValue<T>) => {
+  const setValue = useCallback((value: SetAtomValue<T>) => {
     // eslint-disable-next-line no-param-reassign
     atom.value = typeof value === 'function' ? value(atom.value) : value;
-  };
+  }, [atom]);
 
   return [state, setValue];
 };

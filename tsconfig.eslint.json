@@ -3,6 +3,7 @@
   "include": [
     ".eslintrc.js",
     "**/*.ts",
+    "**/*.tsx",
     "**/*.js",
   ],
 }
