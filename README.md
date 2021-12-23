@@ -26,9 +26,9 @@ Simple atomic state that can be updated outside React.
 
 Please ensure you have installed [`react`](https://github.com/facebook/react) at version `v16.8.0` or higher.
     
-## Usage
+## Examples
 
-#### Basic example
+#### Basic usage
 ```javascript
 import React from 'react';
 // Import 'simple-atom'
@@ -53,11 +53,12 @@ const MyComponent = () => {
         </button>
     );
 }
+
 ```
 
 #### Update component state outside of React
 ```javascript
-// MyComponent.jsx
+// == MyComponent.jsx ==
 import React from 'react';
 import { createAtom, useAtom } from 'simple-atom';
 
@@ -77,14 +78,37 @@ const MyComponent = () => {
     );
 }
 
-// misc-application-logic.js
-import { isLoadingAtom } from './MyComponent.jsx'
+// == other-application-file.js ==
+import { isLoadingAtom } from './MyComponent.jsx';
 
 // MyComponent will now re-render with the updated isLoading state
 isLoadingAtom.value = true;
 
 ```
 
+#### Subscribe to state changes
+```javascript
+import React from 'react';
+import { createAtom, useAtom } from 'simple-atom';
+
+const darkModeAtom = createAtom(window.localStorage.getItem('dark-mode') === 'true');
+
+// Add a subscriber that is triggered on atom value change
+darkModeAtom.subscribe((value) => {
+    window.localStorage.setItem('dark-mode', value.toString());
+});
+
+const MyComponent = () => {
+    const [darkMode, setDarkMode] = useAtom(darkModeAtom);
+
+    return (
+        <button onClick={() => setDarkMode(!darkMode)}>
+            Toggle dark mode
+        </button>
+    );
+}
+
+```
 
 #### With Typescript
 ```typescript
@@ -93,8 +117,8 @@ import { createAtom } from 'simple-atom';
 type User = { name: string, age: number } | null;
 
 const userAtom = createAtom<User>({ name: 'James', age: 25 });
-```
 
+```
 
 ## Acknowledgements
 This package was inspired by these projects.
