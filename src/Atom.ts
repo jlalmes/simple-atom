@@ -3,14 +3,19 @@ export type DeepReadonly<T> = T extends Function ? T : { readonly [P in keyof T]
 
 // https://github.com/substack/deep-freeze/blob/master/index.js
 const deepFreeze = <T>(o: any): DeepReadonly<T> => {
+  // Don't freeze in production for better performance
+  if (process.env.NODE_ENV === 'production') {
+    return o;
+  }
+
   if (o && (typeof o === 'object' || typeof o === 'function')) {
     Object.freeze(o);
     Object.getOwnPropertyNames(o).forEach((prop) => {
       if (
         Object.prototype.hasOwnProperty.call(o, prop)
+          && o[prop]
           && (typeof o === 'object' || (prop !== 'caller' && prop !== 'callee' && prop !== 'arguments'))
           && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
-          && o[prop]
           && !Object.isFrozen(o[prop])
       ) {
         deepFreeze(o[prop]);
