@@ -9,23 +9,31 @@ describe('Atom', () => {
     const numberAtom = createAtom<number>(number);
     const object = { x: 1, y: 2, z: 3 };
     const objectAtom = createAtom<object>(object);
+    const array = [1, 2, 3];
+    const arrayAtom = createAtom<number[]>(array);
     const func = () => 'test';
     const funcAtom = createAtom<Function>(func);
     const nestedFunc = { parent: func };
     const nestedFuncAtom = createAtom<{ parent: Function }>(nestedFunc);
+    const nullAtom = createAtom<null>(null);
+    const undefinedAtom = createAtom<undefined>(undefined);
     expect(stringAtom.value).toBe(string);
     expect(numberAtom.value).toBe(number);
     expect(objectAtom.value).toBe(object);
+    expect(arrayAtom.value).toBe(array);
     expect(funcAtom.value).toBe(func);
     expect(funcAtom.value()).toBe('test');
     expect(nestedFuncAtom.value).toBe(nestedFunc);
     expect(nestedFuncAtom.value.parent()).toBe('test');
+    expect(nullAtom.value).toBe(null);
+    expect(undefinedAtom.value).toBe(undefined);
   });
 
   test('Updating an atom changes value', () => {
     const stringAtom = createAtom<string>('string');
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
+    const arrayAtom = createAtom<number[]>([1, 2, 3]);
     const funcAtom = createAtom<Function>(() => 'test');
     const nestedFuncAtom = createAtom<{ parent: Function }>({ parent: funcAtom.value });
     const string = 'new string';
@@ -34,6 +42,8 @@ describe('Atom', () => {
     numberAtom.value = number;
     const object = { a: 9, b: 8, c: 7 };
     objectAtom.value = object;
+    const array = [9, 8, 7];
+    arrayAtom.value = array;
     const func = () => 'next';
     funcAtom.value = func;
     const nestedFunc = { parent: func };
@@ -41,6 +51,7 @@ describe('Atom', () => {
     expect(stringAtom.value).toBe(string);
     expect(numberAtom.value).toBe(number);
     expect(objectAtom.value).toBe(object);
+    expect(arrayAtom.value).toBe(array);
     expect(funcAtom.value).toBe(func);
     expect(funcAtom.value()).toBe('next');
     expect(nestedFuncAtom.value).toBe(nestedFunc);

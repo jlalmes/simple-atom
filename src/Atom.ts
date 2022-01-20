@@ -1,14 +1,23 @@
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/deep-freeze/index.d.ts
-export type DeepReadonly<T> = T extends (...args: any) => any ? T : { readonly [P in keyof T]: DeepReadonly<T[P]> };
+export type DeepReadonly<T> = T extends Function ? T : { readonly [P in keyof T]: DeepReadonly<T[P]> };
 
 // https://github.com/substack/deep-freeze/blob/master/index.js
 const deepFreeze = <T>(o: any): DeepReadonly<T> => {
-  Object.freeze(o);
-  Object.getOwnPropertyNames(o).forEach((prop) => {
-    if (o.hasOwnProperty(prop) && o[prop] !== null && (typeof o[prop] === 'object' || typeof o[prop] === 'function') && !Object.isFrozen(o[prop])) {
-      deepFreeze(o[prop]);
-    }
-  });
+  if (o && (typeof o === 'object' || typeof o === 'function')) {
+    Object.freeze(o);
+    Object.getOwnPropertyNames(o).forEach((prop) => {
+      if (
+        Object.prototype.hasOwnProperty.call(o, prop)
+          && (typeof o === 'object' || (prop !== 'caller' && prop !== 'callee' && prop !== 'arguments'))
+          && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
+          && o[prop]
+          && !Object.isFrozen(o[prop])
+      ) {
+        deepFreeze(o[prop]);
+      }
+    });
+  }
+
   return o;
 };
 
