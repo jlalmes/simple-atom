@@ -1,19 +1,23 @@
 
 # Simple Atom 
 
-Simple atomic state that can be updated outside React.
+Simple atomic immutable state that can be updated outside React.
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://choosealicense.com/licenses/mit/)
 
-## Why `simple-atom`?
+Contributions & PRs are always welcome! 🙌
+
+## Why use `simple-atom`?
  
 * Update state **outside of a React component.**
 
 * No need for React Context, store your atoms in **global scope**.
 
-* **Familiar API**, identical to `React.setState`.
+* **Familiar API**, identical usage to `React.setState`.
 
 * First class **Typescript support**.
+
+* **Developer friendly**, atom values are deeply frozen to prevent accidental mutations.
 
 * It's simple, open source and it's tiny! **<250 bytes** gzipped.
 
@@ -132,5 +136,3 @@ This package was inspired by these projects.
 ## Authors
 
 - [James Berry (@jlalmes)](https://twitter.com/@jlalmes)
-
-Contributions are always welcome! 🙌

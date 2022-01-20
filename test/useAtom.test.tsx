@@ -54,6 +54,7 @@ describe('useAtom', () => {
     const { result } = renderHook(() => useAtom(atom));
     expect(atom.value).toBe(initialFunction);
     expect(result.current[0]).toBe(initialFunction);
+    expect(initialFunction).toBeCalledTimes(0);
     const updatedFunction = jest.fn(() => {});
     act(() => {
       result.current[1](() => updatedFunction);
@@ -66,7 +67,7 @@ describe('useAtom', () => {
   test('Does not cause unnecessary re-renders', () => {
     const onRenderMock = jest.fn();
     const atom = createAtom<string>('value');
-    const ComponentWithAtom: React.FC = function () {
+    const ComponentWithAtom: React.FC = () => {
       const [value] = useAtom(atom);
       onRenderMock();
       return (<div>{value}</div>);
@@ -79,7 +80,7 @@ describe('useAtom', () => {
     const onRenderMock = jest.fn();
     const onUseEffectMock = jest.fn();
     const atom = createAtom<string>('value');
-    const ComponentWithAtom: React.FC = function () {
+    const ComponentWithAtom: React.FC = () => {
       const [value, setValue] = useAtom(atom);
       onRenderMock();
       useEffect(() => {

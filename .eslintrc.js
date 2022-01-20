@@ -14,5 +14,7 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 'off',
     'import/prefer-default-export': 'off',
     'max-len': 'off',
+    'no-prototype-builtins': 'off',
+    'react/function-component-definition': 'off',
   },
 };

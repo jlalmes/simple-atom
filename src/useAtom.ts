@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import type { Atom } from './Atom';
+import type { Atom, DeepReadonly } from './Atom';
 
 export type SetAtomValue<T> = T extends Function ? ((prevState: T) => T) : T | ((prevState: T) => T);
 
 /** React hook that returns the stateful value of an atom and a function to update it  */
 export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
-  const [state, setState] = useState<T>(atom.value);
+  const [state, setState] = useState<DeepReadonly<T>>(() => atom.value);
 
   useEffect(() => {
     if (state !== atom.value) setState(() => atom.value);

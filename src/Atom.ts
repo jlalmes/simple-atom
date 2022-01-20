@@ -1,22 +1,40 @@
-export type AtomSubscription<T> = (value: T) => void;
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/deep-freeze/index.d.ts
+export type DeepReadonly<T> = T extends (...args: any) => any ? T : { readonly [P in keyof T]: DeepReadonly<T[P]> };
+
+// https://github.com/substack/deep-freeze/blob/master/index.js
+const deepFreeze = <T>(o: any): DeepReadonly<T> => {
+  Object.freeze(o);
+  Object.getOwnPropertyNames(o).forEach((prop) => {
+    if (o.hasOwnProperty(prop) && o[prop] !== null && (typeof o[prop] === 'object' || typeof o[prop] === 'function') && !Object.isFrozen(o[prop])) {
+      deepFreeze(o[prop]);
+    }
+  });
+  return o;
+};
+
+export type AtomSubscription<T> = (value: DeepReadonly<T>) => void;
 
 export class Atom<T> {
-  private _value: T;
+  private _value: DeepReadonly<T>;
   private _subscriptions: AtomSubscription<T>[];
 
   constructor(initialValue: T) {
-    this._value = initialValue;
+    this._value = deepFreeze<T>(initialValue);
     this._subscriptions = [];
     this.subscribe = this.subscribe.bind(this);
   }
 
-  get value() {
+  // @ts-expect-error
+  // ts(2380) The return type of a 'get' accessor must be assignable to its 'set' accessor type.
+  // 'T' could be instantiated with an arbitrary type which could be unrelated to 'DeepReadonly<T>'.
+  get value(): DeepReadonly<T> {
     return this._value;
   }
 
   set value(value: T) {
-    this._value = value;
-    this._subscriptions.forEach((cb) => cb(value));
+    const nextValue = deepFreeze<T>(value);
+    this._value = nextValue;
+    this._subscriptions.forEach((cb) => cb(nextValue));
   }
 
   subscribe(subscription: AtomSubscription<T>) {
