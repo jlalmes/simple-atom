@@ -16,11 +16,13 @@
     "removeComments": false,
     "jsx": "react-jsx",
     "lib": [
-      "esnext"
-    ]
+      "esnext",
+      "dom",
+    ],
   },
   "include": [
     "src",
+    "test",
     "typings",
   ],
 }

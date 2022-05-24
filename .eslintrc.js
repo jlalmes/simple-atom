@@ -1,20 +1,41 @@
 module.exports = {
+  root: true,
+  extends: [
+    'eslint:recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:promise/recommended',
+    'plugin:prettier/recommended',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.eslint.json'],
+    ecmaFeatures: { jsx: true },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: './tsconfig.eslint.json',
+    tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint'],
-  extends: [
-    'airbnb',
-    'airbnb-typescript',
-    'airbnb/hooks',
-  ],
+  env: {
+    browser: true,
+    node: true,
+  },
+  settings: {
+    react: {
+      version: '18',
+    },
+  },
   rules: {
-    'no-underscore-dangle': 'off',
-    '@typescript-eslint/lines-between-class-members': 'off',
-    'import/prefer-default-export': 'off',
-    'max-len': 'off',
-    'no-prototype-builtins': 'off',
-    'react/function-component-definition': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
+  overrides: [
+    {
+      files: ['*.js', '*.jsx'],
+      rules: {},
+    },
+  ],
 };

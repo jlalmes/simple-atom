@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
 import { render } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+import React, { useEffect } from 'react';
 
 import { createAtom, useAtom } from '../src';
 
@@ -49,13 +49,13 @@ describe('useAtom', () => {
   });
 
   test('Can set function types in atom hook', () => {
-    const initialFunction = jest.fn(() => {});
+    const initialFunction = jest.fn(() => ({}));
     const atom = createAtom<() => void>(initialFunction);
     const { result } = renderHook(() => useAtom(atom));
     expect(atom.value).toBe(initialFunction);
     expect(result.current[0]).toBe(initialFunction);
     expect(initialFunction).toBeCalledTimes(0);
-    const updatedFunction = jest.fn(() => {});
+    const updatedFunction = jest.fn(() => ({}));
     act(() => {
       result.current[1](() => updatedFunction);
     });
@@ -70,7 +70,7 @@ describe('useAtom', () => {
     const ComponentWithAtom: React.FC = () => {
       const [value] = useAtom(atom);
       onRenderMock();
-      return (<div>{value}</div>);
+      return <div>{value}</div>;
     };
     render(<ComponentWithAtom />);
     expect(onRenderMock).toHaveBeenCalledTimes(1);
@@ -87,7 +87,7 @@ describe('useAtom', () => {
         onUseEffectMock();
         setValue('next');
       }, [setValue]);
-      return (<div>{value}</div>);
+      return <div>{value}</div>;
     };
     render(<ComponentWithAtom />);
     expect(onRenderMock).toHaveBeenCalledTimes(2);
