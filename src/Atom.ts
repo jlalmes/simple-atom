@@ -1,6 +1,11 @@
+/* eslint-disable */
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/deep-freeze/index.d.ts
-export type DeepReadonly<T> = T extends Function ? T : { readonly [P in keyof T]: DeepReadonly<T[P]> };
+export type DeepReadonly<T> = T extends Function
+  ? T
+  : { readonly [P in keyof T]: DeepReadonly<T[P]> };
+/* eslint-enable */
 
+/* eslint-disable */
 // https://github.com/substack/deep-freeze/blob/master/index.js
 const deepFreeze = <T>(o: any): DeepReadonly<T> => {
   // Don't freeze in production for better performance
@@ -12,11 +17,12 @@ const deepFreeze = <T>(o: any): DeepReadonly<T> => {
     Object.freeze(o);
     Object.getOwnPropertyNames(o).forEach((prop) => {
       if (
-        Object.prototype.hasOwnProperty.call(o, prop)
-          && o[prop]
-          && (typeof o === 'object' || (prop !== 'caller' && prop !== 'callee' && prop !== 'arguments'))
-          && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
-          && !Object.isFrozen(o[prop])
+        Object.prototype.hasOwnProperty.call(o, prop) &&
+        o[prop] &&
+        (typeof o === 'object' ||
+          (prop !== 'caller' && prop !== 'callee' && prop !== 'arguments')) &&
+        (typeof o[prop] === 'object' || typeof o[prop] === 'function') &&
+        !Object.isFrozen(o[prop])
       ) {
         deepFreeze(o[prop]);
       }
@@ -25,21 +31,31 @@ const deepFreeze = <T>(o: any): DeepReadonly<T> => {
 
   return o;
 };
+/* eslint-enable */
 
 export type AtomSubscription<T> = (value: DeepReadonly<T>) => void;
+
+export type AtomOptions = {
+  name: string;
+};
 
 export class Atom<T> {
   private _value: DeepReadonly<T>;
   private _subscriptions: AtomSubscription<T>[];
+  private _name?: string;
 
-  constructor(initialValue: T) {
+  constructor(initialValue: T, opts?: AtomOptions) {
     this._value = deepFreeze<T>(initialValue);
     this._subscriptions = [];
     this.subscribe = this.subscribe.bind(this);
+    this._name = opts?.name;
   }
 
-  // @ts-expect-error
-  // ts(2380) The return type of a 'get' accessor must be assignable to its 'set' accessor type.
+  get name() {
+    return this._name;
+  }
+
+  // @ts-expect-error - ts(2380) The return type of a 'get' accessor must be assignable to its 'set' accessor type.
   // 'T' could be instantiated with an arbitrary type which could be unrelated to 'DeepReadonly<T>'.
   get value(): DeepReadonly<T> {
     return this._value;
@@ -52,11 +68,13 @@ export class Atom<T> {
   }
 
   subscribe(subscription: AtomSubscription<T>) {
-    this._subscriptions = [...this._subscriptions, subscription];
+    this._subscriptions.push(subscription);
     return () => {
       this._subscriptions = this._subscriptions.filter((cb) => cb !== subscription);
     };
   }
 }
 
-export const createAtom = <T>(initialValue: T) => new Atom<T>(initialValue);
+/** Create a new atom function with options */
+export const createAtom = <T>(initialValue: T, opts?: AtomOptions) =>
+  new Atom<T>(initialValue, opts);

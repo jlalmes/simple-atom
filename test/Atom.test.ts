@@ -12,9 +12,9 @@ describe('Atom', () => {
     const array = [1, 2, 3];
     const arrayAtom = createAtom<number[]>(array);
     const func = () => 'test';
-    const funcAtom = createAtom<Function>(func);
+    const funcAtom = createAtom<() => any>(func);
     const nestedFunc = { parent: func };
-    const nestedFuncAtom = createAtom<{ parent: Function }>(nestedFunc);
+    const nestedFuncAtom = createAtom<{ parent: () => any }>(nestedFunc);
     const nullAtom = createAtom<null>(null);
     const undefinedAtom = createAtom<undefined>(undefined);
     expect(stringAtom.value).toBe(string);
@@ -34,8 +34,8 @@ describe('Atom', () => {
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
     const arrayAtom = createAtom<number[]>([1, 2, 3]);
-    const funcAtom = createAtom<Function>(() => 'test');
-    const nestedFuncAtom = createAtom<{ parent: Function }>({ parent: funcAtom.value });
+    const funcAtom = createAtom<() => any>(() => 'test');
+    const nestedFuncAtom = createAtom<{ parent: () => any }>({ parent: funcAtom.value });
     const string = 'new string';
     stringAtom.value = string;
     const number = 1000;
@@ -62,20 +62,20 @@ describe('Atom', () => {
     const stringAtom = createAtom<string>('string');
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
-    const funcAtom = createAtom<Function>(() => 'test');
-    const stringSubscription: AtomSubscription<string> = jest.fn(() => {});
+    const funcAtom = createAtom<() => any>(() => 'test');
+    const stringSubscription: AtomSubscription<string> = jest.fn(() => ({}));
     stringAtom.subscribe(stringSubscription);
     const string = 'new string';
     stringAtom.value = string;
-    const numberSubscription: AtomSubscription<number> = jest.fn(() => {});
+    const numberSubscription: AtomSubscription<number> = jest.fn(() => ({}));
     numberAtom.subscribe(numberSubscription);
     const number = 1000;
     numberAtom.value = number;
-    const objectSubscription: AtomSubscription<object> = jest.fn(() => {});
+    const objectSubscription: AtomSubscription<object> = jest.fn(() => ({}));
     objectAtom.subscribe(objectSubscription);
     const object = { a: 9, b: 8, c: 7 };
     objectAtom.value = object;
-    const funcSubscription: AtomSubscription<Function> = jest.fn(() => {});
+    const funcSubscription: AtomSubscription<() => any> = jest.fn(() => ({}));
     funcAtom.subscribe(funcSubscription);
     const func = () => 'next';
     funcAtom.value = func;
@@ -93,23 +93,23 @@ describe('Atom', () => {
     const stringAtom = createAtom<string>('string');
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
-    const funcAtom = createAtom<Function>(() => 'test');
-    const stringSubscription: AtomSubscription<string> = jest.fn(() => {});
+    const funcAtom = createAtom<() => any>(() => 'test');
+    const stringSubscription: AtomSubscription<string> = jest.fn(() => ({}));
     const unsubscribeStringAtom = stringAtom.subscribe(stringSubscription);
     unsubscribeStringAtom();
     const string = 'new string';
     stringAtom.value = string;
-    const numberSubscription: AtomSubscription<number> = jest.fn(() => {});
+    const numberSubscription: AtomSubscription<number> = jest.fn(() => ({}));
     const unsubscribeNumberAtom = numberAtom.subscribe(numberSubscription);
     unsubscribeNumberAtom();
     const number = 1000;
     numberAtom.value = number;
-    const objectSubscription: AtomSubscription<object> = jest.fn(() => {});
+    const objectSubscription: AtomSubscription<object> = jest.fn(() => ({}));
     const unsubscribeObjectAtom = objectAtom.subscribe(objectSubscription);
     unsubscribeObjectAtom();
     const object = { a: 9, b: 8, c: 7 };
     objectAtom.value = object;
-    const funcSubscription: AtomSubscription<Function> = jest.fn(() => {});
+    const funcSubscription: AtomSubscription<() => any> = jest.fn(() => ({}));
     const unsubscribeFuncAtom = funcAtom.subscribe(funcSubscription);
     unsubscribeFuncAtom();
     const func = () => 'next';
@@ -123,11 +123,12 @@ describe('Atom', () => {
   test('Updating nested object atom value throws TypeError', () => {
     type NestedObject = { parent: { child: number } };
     const nestedObjectAtom = createAtom<NestedObject>({ parent: { child: 0 } });
-    const nestedObjectSubscription: AtomSubscription<NestedObject> = jest.fn(() => {});
+    const nestedObjectSubscription: AtomSubscription<NestedObject> = jest.fn(() => ({}));
     nestedObjectAtom.subscribe(nestedObjectSubscription);
-    // @ts-expect-error
-    // ts(2540) Cannot assign to 'child' because it is a read-only property.
-    expect(() => { nestedObjectAtom.value.parent.child = 1; }).toThrowError(TypeError);
+    expect(() => {
+      // @ts-expect-error - ts(2540) Cannot assign to 'child' because it is a read-only property.
+      nestedObjectAtom.value.parent.child = 1;
+    }).toThrowError(TypeError);
     expect(nestedObjectAtom.value.parent.child).toBe(0);
     expect(nestedObjectSubscription).toBeCalledTimes(0);
   });
@@ -135,15 +136,29 @@ describe('Atom', () => {
   test('Mutating array atom value throws TypeError', () => {
     type NestedArray = { parent: number[] };
     const nestedArrayAtom = createAtom<NestedArray>({ parent: [1, 3, 2, 4] });
-    const nestedArraySubscription: AtomSubscription<NestedArray> = jest.fn(() => {});
+    const nestedArraySubscription: AtomSubscription<NestedArray> = jest.fn(() => ({}));
     nestedArrayAtom.subscribe(nestedArraySubscription);
-    // @ts-expect-error
-    // ts(2339) Property 'sort' does not exist on type 'readonly number[]'.
-    expect(() => { nestedArrayAtom.value.parent.sort(); }).toThrowError(TypeError);
+    expect(() => {
+      // @ts-expect-error - ts(2339) Property 'sort' does not exist on type 'readonly number[]'.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      nestedArrayAtom.value.parent.sort();
+    }).toThrowError(TypeError);
     expect(nestedArrayAtom.value.parent).toEqual([1, 3, 2, 4]);
     expect(nestedArraySubscription).toBeCalledTimes(0);
-    nestedArrayAtom.value = { ...nestedArrayAtom.value, parent: [...nestedArrayAtom.value.parent].sort() };
+    nestedArrayAtom.value = {
+      ...nestedArrayAtom.value,
+      parent: [...nestedArrayAtom.value.parent].sort(),
+    };
     expect(nestedArrayAtom.value.parent).toEqual([1, 2, 3, 4]);
     expect(nestedArraySubscription).toBeCalledTimes(1);
+  });
+
+  test('Name option sets atom name', () => {
+    const firstName = 'James';
+    const jobTitle = 'Developer';
+    const namedAtom = createAtom(firstName, { name: 'firstName' });
+    const unnamedAtom = createAtom(jobTitle);
+    expect(namedAtom.name).toBe('firstName');
+    expect(unnamedAtom.name).toBe(undefined);
   });
 });
