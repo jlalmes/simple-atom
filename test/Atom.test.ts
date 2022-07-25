@@ -12,7 +12,7 @@ describe('Atom', () => {
     const array = [1, 2, 3];
     const arrayAtom = createAtom<number[]>(array);
     const func = () => 'test';
-    const funcAtom = createAtom<() => any>(func);
+    const funcAtom = createAtom<() => any>(() => func);
     const nestedFunc = { parent: func };
     const nestedFuncAtom = createAtom<{ parent: () => any }>(nestedFunc);
     const nullAtom = createAtom<null>(null);
@@ -34,7 +34,7 @@ describe('Atom', () => {
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
     const arrayAtom = createAtom<number[]>([1, 2, 3]);
-    const funcAtom = createAtom<() => any>(() => 'test');
+    const funcAtom = createAtom<() => any>(() => () => 'test');
     const nestedFuncAtom = createAtom<{ parent: () => any }>({ parent: funcAtom.value });
     const string = 'new string';
     stringAtom.value = string;
@@ -62,7 +62,7 @@ describe('Atom', () => {
     const stringAtom = createAtom<string>('string');
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
-    const funcAtom = createAtom<() => any>(() => 'test');
+    const funcAtom = createAtom<() => any>(() => () => 'test');
     const stringSubscription: AtomSubscription<string> = jest.fn(() => ({}));
     stringAtom.subscribe(stringSubscription);
     const string = 'new string';
@@ -93,7 +93,7 @@ describe('Atom', () => {
     const stringAtom = createAtom<string>('string');
     const numberAtom = createAtom<number>(999);
     const objectAtom = createAtom<object>({ x: 1, y: 2, z: 3 });
-    const funcAtom = createAtom<() => any>(() => 'test');
+    const funcAtom = createAtom<() => any>(() => () => 'test');
     const stringSubscription: AtomSubscription<string> = jest.fn(() => ({}));
     const unsubscribeStringAtom = stringAtom.subscribe(stringSubscription);
     unsubscribeStringAtom();
@@ -120,30 +120,6 @@ describe('Atom', () => {
     expect(funcSubscription).toBeCalledTimes(0);
   });
 
-  test('Updating nested object atom value throws TypeError', () => {
-    type NestedObject = { parent: { child: number } };
-    const nestedObjectAtom = createAtom<NestedObject>({ parent: { child: 0 } });
-    const nestedObjectSubscription: AtomSubscription<NestedObject> = jest.fn(() => ({}));
-    nestedObjectAtom.subscribe(nestedObjectSubscription);
-    expect(nestedObjectAtom.value.parent.child).toBe(0);
-    expect(nestedObjectSubscription).toBeCalledTimes(0);
-  });
-
-  test('Mutating array atom value throws TypeError', () => {
-    type NestedArray = { parent: number[] };
-    const nestedArrayAtom = createAtom<NestedArray>({ parent: [1, 3, 2, 4] });
-    const nestedArraySubscription: AtomSubscription<NestedArray> = jest.fn(() => ({}));
-    nestedArrayAtom.subscribe(nestedArraySubscription);
-    expect(nestedArrayAtom.value.parent).toEqual([1, 3, 2, 4]);
-    expect(nestedArraySubscription).toBeCalledTimes(0);
-    nestedArrayAtom.value = {
-      ...nestedArrayAtom.value,
-      parent: [...nestedArrayAtom.value.parent].sort(),
-    };
-    expect(nestedArrayAtom.value.parent).toEqual([1, 2, 3, 4]);
-    expect(nestedArraySubscription).toBeCalledTimes(1);
-  });
-
   test('Name option sets atom name', () => {
     const firstName = 'James';
     const jobTitle = 'Developer';
@@ -151,5 +127,26 @@ describe('Atom', () => {
     const unnamedAtom = createAtom(jobTitle);
     expect(namedAtom.name).toBe('firstName');
     expect(unnamedAtom.name).toBe(undefined);
+  });
+
+  test('Can createAtom with initialValue function', () => {
+    const value = 'value';
+    const atom = createAtom(() => value);
+    expect(atom.value).toBe(value);
+
+    // SSR example
+    const createSSRAtom = () => {
+      return createAtom<string>(() => {
+        // @ts-expect-error - property does not exist yet
+        if (globalThis.__NON_EXISTENT_PROPERTY__) {
+          return 'dark';
+        }
+        return 'light';
+      });
+    };
+    expect(createSSRAtom().value).toBe('light');
+    // @ts-expect-error - defining property on global object
+    globalThis.__NON_EXISTENT_PROPERTY__ = true;
+    expect(createSSRAtom().value).toBe('dark');
   });
 });

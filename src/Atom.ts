@@ -9,8 +9,10 @@ export class Atom<T> {
   private _subscriptions: AtomSubscription<T>[];
   private _name?: string;
 
-  constructor(initialValue: T, opts?: AtomOptions) {
-    this._value = initialValue;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  constructor(initialValue: T extends Function ? () => T : T | (() => T), opts?: AtomOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this._value = typeof initialValue === 'function' ? initialValue() : initialValue;
     this._subscriptions = [];
     this.subscribe = this.subscribe.bind(this);
     this._name = opts?.name;
@@ -38,5 +40,8 @@ export class Atom<T> {
 }
 
 /** Create a new atom function with options */
-export const createAtom = <T>(initialValue: T, opts?: AtomOptions) =>
-  new Atom<T>(initialValue, opts);
+export const createAtom = <T>(
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  initialValue: T extends Function ? () => T : T | (() => T),
+  opts?: AtomOptions,
+) => new Atom<T>(initialValue, opts);
