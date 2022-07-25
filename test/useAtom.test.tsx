@@ -50,7 +50,7 @@ describe('useAtom', () => {
 
   test('Can set function types in atom hook', () => {
     const initialFunction = jest.fn(() => ({}));
-    const atom = createAtom<() => void>(initialFunction);
+    const atom = createAtom<() => void>(() => initialFunction);
     const { result } = renderHook(() => useAtom(atom));
     expect(atom.value).toBe(initialFunction);
     expect(result.current[0]).toBe(initialFunction);
