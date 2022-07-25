@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { Atom, DeepReadonly } from './Atom';
+import type { Atom } from './Atom';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SetAtomValue<T> = T extends Function ? (prevState: T) => T : T | ((prevState: T) => T);
 
 /** React hook that returns a tuple with reactive atom value and update function  */
 export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
-  const [state, setState] = useState<DeepReadonly<T>>(() => atom.value);
+  const [state, setState] = useState<T>(() => atom.value);
 
   useEffect(() => {
     if (state !== atom.value) {

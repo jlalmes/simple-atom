@@ -125,10 +125,6 @@ describe('Atom', () => {
     const nestedObjectAtom = createAtom<NestedObject>({ parent: { child: 0 } });
     const nestedObjectSubscription: AtomSubscription<NestedObject> = jest.fn(() => ({}));
     nestedObjectAtom.subscribe(nestedObjectSubscription);
-    expect(() => {
-      // @ts-expect-error - ts(2540) Cannot assign to 'child' because it is a read-only property.
-      nestedObjectAtom.value.parent.child = 1;
-    }).toThrowError(TypeError);
     expect(nestedObjectAtom.value.parent.child).toBe(0);
     expect(nestedObjectSubscription).toBeCalledTimes(0);
   });
@@ -138,11 +134,6 @@ describe('Atom', () => {
     const nestedArrayAtom = createAtom<NestedArray>({ parent: [1, 3, 2, 4] });
     const nestedArraySubscription: AtomSubscription<NestedArray> = jest.fn(() => ({}));
     nestedArrayAtom.subscribe(nestedArraySubscription);
-    expect(() => {
-      // @ts-expect-error - ts(2339) Property 'sort' does not exist on type 'readonly number[]'.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      nestedArrayAtom.value.parent.sort();
-    }).toThrowError(TypeError);
     expect(nestedArrayAtom.value.parent).toEqual([1, 3, 2, 4]);
     expect(nestedArraySubscription).toBeCalledTimes(0);
     nestedArrayAtom.value = {
