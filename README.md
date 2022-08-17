@@ -1,5 +1,6 @@
 <div align="center">
   <h1>simple-atom</h1>
+  <p>If Jotai & Zustand had a baby 👼</p>
   <a href="https://www.npmjs.com/package/simple-atom"><img src="https://img.shields.io/npm/v/simple-atom.svg?style=flat&color=brightgreen" target="_blank" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-black" /></a>
   <br />
@@ -124,7 +125,6 @@ This package was inspired by these projects.
 
 - [React](https://reactjs.org/docs/hooks-reference.html#usestate)
 - [Jotai](https://github.com/pmndrs/jotai)
-- [Recoil](https://recoiljs.org/)
 - [Zustand](https://github.com/pmndrs/zustand)
 
 ## Authors
