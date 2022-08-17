@@ -1,6 +1,6 @@
 {
   "name": "simple-atom",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Simple atomic state that can be updated outside React.",
   "author": "James Berry <jb@jamesbe.com>",
   "private": false,
@@ -20,7 +20,7 @@
   "scripts": {
     "test": "tsc --noEmit && jest --verbose",
     "build": "rimraf dist && tsc",
-    "release": "npm run test && npm run build && npm version patch && npm publish"
+    "release": "npm run test && npm version patch && npm run build && npm publish"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
