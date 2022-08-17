@@ -15,14 +15,7 @@
     "sourceMap": true,
     "removeComments": false,
     "jsx": "react-jsx",
-    "lib": [
-      "esnext",
-      "dom",
-    ],
+    "lib": ["esnext", "dom"]
   },
-  "include": [
-    "src",
-    "test",
-    "typings",
-  ],
+  "include": ["src"]
 }
