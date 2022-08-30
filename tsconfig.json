@@ -17,5 +17,5 @@
     "jsx": "react-jsx",
     "lib": ["esnext", "dom"]
   },
-  "include": ["src"]
+  "include": ["**/.eslintrc.js", "**/*"]
 }

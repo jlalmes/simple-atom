@@ -17,7 +17,7 @@ module.exports = {
     ecmaFeatures: { jsx: true },
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.eslint.json',
+    project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
   env: {
@@ -31,6 +31,7 @@ module.exports = {
   },
   rules: {
     'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/ban-types': 'warn',
   },
   overrides: [
     {

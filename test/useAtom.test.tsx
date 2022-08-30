@@ -1,8 +1,9 @@
 import { render } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { expectTypeOf } from 'expect-type';
 import React, { useEffect } from 'react';
 
-import { createAtom, useAtom } from '../src';
+import { SetAtomValue, createAtom, useAtom } from '../src';
 
 describe('useAtom', () => {
   test('Hook returns atom value and setter function', () => {
@@ -10,7 +11,9 @@ describe('useAtom', () => {
     const atom = createAtom<string>(initial);
     const { result } = renderHook(() => useAtom(atom));
     expect(result.current[0]).toBe(initial);
+    expectTypeOf(result.current[0]).toMatchTypeOf<string>();
     expect(typeof result.current[1]).toBe('function');
+    expectTypeOf(result.current[1]).toMatchTypeOf<(value: SetAtomValue<string>) => void>();
   });
 
   test('Updating atom from hook setter returns new atom value', () => {
@@ -49,19 +52,29 @@ describe('useAtom', () => {
   });
 
   test('Can set function types in atom hook', () => {
-    const initialFunction = jest.fn(() => ({}));
-    const atom = createAtom<() => void>(() => initialFunction);
+    const mock = jest.fn();
+    const initialFn = () => {
+      mock();
+      return 'initial';
+    };
+    const atom = createAtom(() => initialFn);
     const { result } = renderHook(() => useAtom(atom));
-    expect(atom.value).toBe(initialFunction);
-    expect(result.current[0]).toBe(initialFunction);
-    expect(initialFunction).toBeCalledTimes(0);
-    const updatedFunction = jest.fn(() => ({}));
+    expect(atom.value).toBe(initialFn);
+    expect(result.current[0]).toBe(initialFn);
+    expect(mock).toHaveBeenCalledTimes(0);
+    const nextFn = () => {
+      mock();
+      return 'next';
+    };
     act(() => {
-      result.current[1](() => updatedFunction);
+      result.current[1]((previousFn) => {
+        expect(previousFn()).toBe('initial');
+        return nextFn;
+      });
     });
-    expect(atom.value).toBe(updatedFunction);
-    expect(result.current[0]).toBe(updatedFunction);
-    expect(updatedFunction).toBeCalledTimes(0);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(atom.value).toBe(nextFn);
+    expect(result.current[0]).toBe(nextFn);
   });
 
   test('Does not cause unnecessary re-renders', () => {
@@ -82,6 +95,8 @@ describe('useAtom', () => {
     const atom = createAtom<string>('value');
     const ComponentWithAtom: React.FC = () => {
       const [value, setValue] = useAtom(atom);
+      expectTypeOf(value).toMatchTypeOf<string>();
+      expectTypeOf(setValue).toMatchTypeOf<(value: SetAtomValue<string>) => void>();
       onRenderMock();
       useEffect(() => {
         onUseEffectMock();
