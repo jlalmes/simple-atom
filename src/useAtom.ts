@@ -2,10 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Atom } from './Atom';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type SetAtomValue<T> = T extends Function ? (prevState: T) => T : T | ((prevState: T) => T);
+export type SetAtomValue<T> = (T extends Function ? never : T) | ((prevState: T) => T);
 
-/** React hook that returns a tuple with reactive atom value and update function  */
+/** React hook returns a tuple of reactive atom value and setter function  */
 export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
   const [state, setState] = useState<T>(() => atom.value);
 
@@ -21,7 +20,7 @@ export const useAtom = <T>(atom: Atom<T>): [typeof state, typeof setValue] => {
   const setValue = useCallback(
     (value: SetAtomValue<T>) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      atom.value = typeof value === 'function' ? value(atom.value) : value;
+      atom.value = typeof value === 'function' ? (value as Function)(atom.value) : value;
     },
     [atom],
   );
